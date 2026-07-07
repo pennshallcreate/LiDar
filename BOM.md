@@ -11,8 +11,10 @@ LiDAR-only scanner that exports intensity-shaded PLY point clouds.
 |---|---|---|
 | **Total** | **$150** | **$135** |
 | Turntable drive | NEMA17 + A4988 (geared, more torque margin) | 28BYJ‑48 + ULN2003 (no boost converter needed) |
-| Battery runtime @ full load | ≈ 3–4 h (10,000 mAh) | ≈ 1.5–2 h (5,000 mAh) |
-| Both clear the 15-min requirement by | **~12–16×** | **~6–8×** |
+| Battery runtime, worst case / typical | 72 min / ≈3h55m (10,000 mAh) | 105 min / ≈3h25m (5,000 mAh) |
+| Both clear the 15-min requirement (worst case) by | **4.8×** | **7.0×** |
+
+Full derivation in [ARCHITECTURE.md § Power budget](ARCHITECTURE.md#5-power-budget).
 
 ## Assumption: ≤$100 is not achievable — here's why
 
@@ -106,11 +108,13 @@ capability:
    your printed parts come out heavier or your bearing is stiffer than
    expected.
 2. **Runtime margin, not runtime compliance.** See
-   [ARCHITECTURE.md](ARCHITECTURE.md#power-budget) — even the Budget tier's
-   5,000 mAh bank clears the 15-minute requirement by ~6–8×. The
-   Recommended tier's bigger bank just means more scans per charge in the
-   field (a full day of scanning vs. a couple of hours), not "the Budget
-   build might not make it."
+   [ARCHITECTURE.md § Power budget](ARCHITECTURE.md#5-power-budget) — even
+   under deliberately pessimistic assumptions, the Budget tier's 5,000 mAh
+   bank clears the 15-minute requirement by 7.0×. The Recommended tier's
+   bigger bank buys more scans per charge in the field (a full afternoon of
+   scanning vs. a couple of hours at the typical-case draw), not "the Budget
+   build might not make it" — both tiers clear the hard requirement
+   comfortably.
 3. **Spare A4988.** The 2-pack means a burnt-out driver (the most common
    stepper-wiring failure — happens if you hot-plug the motor connector)
    doesn't strand the whole build. The 28BYJ-48/ULN2003 kit is bought as a
