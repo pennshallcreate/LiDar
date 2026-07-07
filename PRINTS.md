@@ -26,22 +26,23 @@ different motor/bearing choices — see [BOM.md](BOM.md) for why), these six
 parts are a from-scratch, simpler mechanical layout sized around this
 build's parts:
 
-- **No gearbox.** Direct-drive NEMA17 (or 28BYJ-48) instead of PiLiDAR's
-  3D-printed planetary reduction — see [ARCHITECTURE.md § 4](ARCHITECTURE.md#4-motion-system)
-  for the resolution math showing this doesn't cost any azimuth precision.
+- **No gearbox.** Direct-drive 28BYJ-48 (or, as an upgrade, NEMA17)
+  instead of PiLiDAR's 3D-printed planetary reduction — see
+  [ARCHITECTURE.md § 4](ARCHITECTURE.md#4-motion-system) for the
+  resolution math showing this doesn't cost any azimuth precision.
 - **A hardware lazy-susan bearing carries the load**, not the motor shaft
   or a printed thrust surface — cheap, and it's the difference between a
   turntable that's rigid for years and one that wears loose in a month.
-- **The battery is strapped on, not enclosed.** Recommended and Budget tiers
-  use different power-bank sizes (BOM.md), so a tightly-fitted battery
-  compartment would only fit one of them. A flat strap area (two slots,
-  any hook-and-loop strap or bungee) fits either, and any battery you
-  swap in later.
-- **A generic M3 mounting grid** for the Pi/driver board/boost converter,
+- **The battery is strapped on, not enclosed.** A flat strap area (two
+  slots, any hook-and-loop strap or bungee) fits whatever power bank you
+  have or swap in later, rather than locking in one exact size.
+- **A generic M3 mounting grid** for the breadboard/Pi/driver board,
   rather than component-specific bosses. Their exact footprints depend on
   which exact boards you bought; a 20mm grid of clearance holes lets you
   zip-tie or M3-standoff whatever you actually have, instead of hoping
   your parts match a hole pattern sized for parts I don't have in hand.
+  This is also where the breadboard(s) sit (adhesive-backed, no bolt
+  pattern needed — see part 1 below).
 
 ## Parts
 
@@ -62,8 +63,8 @@ battery straps, tripod mount.
 | 28BYJ-48 motor holes | 2× ⌀3.4mm, 35mm apart, centered on the bore | both motor patterns are present simultaneously — use whichever matches your BOM tier |
 | Feet | 4× ⌀14×40mm posts, corners | 40mm clears the NEMA17 body hanging underneath (see ARCHITECTURE.md) |
 | Tripod mount | ⌀20mm boss, ⌀9.6mm pilot hole, underside | sized for a standard 1/4"-20 heat-set insert — **verify against the insert you buy**, they vary a mm or so by brand |
-| Electronics grid | 3×5 array of ⌀3.4mm holes, 20mm pitch | generic mount for Pi/driver/boost — zip-tie or M3 standoff whatever you have |
-| Button holes | 2× ⌀12mm | scan-trigger + power |
+| Electronics grid | 3×5 array of ⌀3.4mm holes, 20mm pitch | generic mount — zip-tie or M3 standoff whatever you have. A half-size solderless breadboard (~85×55mm, BOM.md) sits here via its adhesive backing; it doesn't need to align with the grid holes, which stay free for the ULN2003 board, buttons, etc. A full-size breadboard (~165mm long) does *not* fit this zone next to the bearing — that's why BOM.md specifies half-size. |
+| Button holes | 2× ⌀12mm | Sized for a panel-mount switch pushed through from below. This build instead uses pin-header button *modules* (BOM.md) which just sit in the open electronics area and don't need to pass through a hole — these two holes go unused by default, or repurpose them as wire/zip-tie pass-throughs. If you'd rather use bare panel-mount switches, they fit here as originally designed. |
 | Battery strap slots | 2× 20×3mm slots | route a hook-and-loop strap or bungee through these to hold the power bank |
 
 Print flat, no supports, PETG or PLA, 3-4 walls, 25% infill.
@@ -127,12 +128,36 @@ the `Y_OFFSET`/`Z_OFFSET` your software calibration needs** (see
 the assembled bracket and start your calibration from that number rather
 than guessing.
 
-### 5. NEMA17 motor hub — `models/motor_hub_nema17.scad` (Recommended tier)
+### 5. 28BYJ-48 motor hub — `models/motor_hub_uln2003.scad` (default build)
+
+![uln2003 hub render](models/renders/motor_hub_uln2003.png)
+
+Clamps onto the 28BYJ-48's output shaft, bolts to the platter's underside.
+This is the hub to print for the default, no-multimeter/no-soldering
+build (BOM.md, BUILD.md).
+
+| Dimension | Value | Notes |
+|---|---|---|
+| Hub | ⌀30 × 12mm | shorter than the NEMA17 hub below, matching the 28BYJ-48's shorter output shaft |
+| Shaft bore | ⌀5.2mm | +0.2mm print-fit allowance over the ~5mm nominal shaft |
+| Set screw | M3 radial, thread-formed into the print (or tap / threaded insert) | clamps onto the shaft's D-flat |
+| Bolt pattern | 3× ⌀3.4mm on ⌀20mm bolt circle, 90/210/330° | must match `platter.scad` |
+
+**Check your specific kit before printing**: many 28BYJ-48 motors ship
+with a small plastic coupler/gear already pressed onto the output shaft.
+Either remove it and bore this hub for the bare ~5mm D-shaft (the default
+here), or measure that coupler's outer diameter and change `shaft_bore_d`
+to clamp onto it instead.
+
+### 6. NEMA17 motor hub — `models/motor_hub_nema17.scad` (optional upgrade, needs a multimeter)
 
 ![nema17 hub render](models/renders/motor_hub_nema17.png)
 
-Clamps onto the NEMA17's 5mm D-shaft, bolts to the platter's underside.
-This part carries all drive torque — print it solid.
+Not part of the default build — only print this if you're doing the
+NEMA17 + A4988 upgrade (BOM.md, ARCHITECTURE.md § 4.2, BUILD.md's
+appendix), which needs a multimeter to set up safely. Clamps onto the
+NEMA17's 5mm D-shaft; same bolt pattern as the 28BYJ-48 hub above, just
+taller (15mm) to match the NEMA17's longer shaft and carry more torque.
 
 | Dimension | Value | Notes |
 |---|---|---|
@@ -144,19 +169,6 @@ This part carries all drive torque — print it solid.
 PETG strongly recommended for this part specifically — it's the highest
 stress-concentration point in the whole mechanism.
 
-### 6. 28BYJ-48 motor hub — `models/motor_hub_uln2003.scad` (Budget tier)
-
-![uln2003 hub render](models/renders/motor_hub_uln2003.png)
-
-Same bolt pattern as the NEMA17 hub, shorter (12mm) to match the
-28BYJ-48's shorter output shaft.
-
-**Check your specific kit before printing**: many 28BYJ-48 motors ship
-with a small plastic coupler/gear already pressed onto the output shaft.
-Either remove it and bore this hub for the bare ~5mm D-shaft (the default
-here), or measure that coupler's outer diameter and change `shaft_bore_d`
-to clamp onto it instead.
-
 ## Print settings summary
 
 | Part | Material | Infill | Supports |
@@ -165,7 +177,7 @@ to clamp onto it instead.
 | Platter | PETG or PLA | 30-40% | No |
 | Mast | PETG (PLA can creep) | 30% | No |
 | LiDAR mount | PETG or PLA | 30% | No |
-| Motor hubs (either) | PETG | 50%+ or solid | No |
+| Motor hub (28BYJ-48 or NEMA17) | PETG | 50%+ or solid | No |
 
 All six parts print without supports as designed (flat plates, vertical
 extrusions, no overhangs past 45°). None require a print bed larger than

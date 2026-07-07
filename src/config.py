@@ -44,6 +44,7 @@ class Config:
         self.set_device(self.get("LIDAR", "DEVICE"))
 
         # stepper geometry
+        self.STEPPER_DRIVER = self.get("STEPPER", "DRIVER")
         self.STEPPER_RES = self.get("STEPPER", "STEPPER_RES")
         self.MICROSTEPS = self.get("STEPPER", "MICROSTEPS")
         self.SCAN_ANGLE = self.get("STEPPER", "SCAN_ANGLE")
@@ -88,11 +89,22 @@ class Config:
 
     def update_target_res(self, target_res):
         """Derive microstep count per move and package-per-revolution
-        count from the desired azimuth resolution (degrees/step)."""
+        count from the desired azimuth resolution (degrees/step).
+
+        Steps-per-revolution depends on which stepper driver is
+        configured -- ULN2003's 28BYJ-48 has a fixed ~4096 steps/rev from
+        its internal gearbox, unrelated to A4988's STEPPER_RES*MICROSTEPS
+        microstepping math. Using the wrong one silently under- or
+        over-drives the turntable relative to what TARGET_RES/SCAN_ANGLE
+        claim -- e.g. a 180 deg scan would actually stop ~30 deg short."""
         self.target_res = target_res
         self.set(self.target_res, "LIDAR", "TARGET_RES")
 
-        self.microsteps_per_revolution = self.STEPPER_RES * self.MICROSTEPS * self.gear_ratio
+        if self.STEPPER_DRIVER == "ULN2003":
+            steps_per_revolution = self.get("STEPPER", "ULN2003_STEPS_PER_REV")
+        else:
+            steps_per_revolution = self.STEPPER_RES * self.MICROSTEPS
+        self.microsteps_per_revolution = steps_per_revolution * self.gear_ratio
         self.steps = max(1, int(round(self.microsteps_per_revolution * self.target_res / 360)))
         self.h_res = 360 * self.steps / self.microsteps_per_revolution
         self.horizontal_steps = int(abs(self.SCAN_ANGLE) / self.h_res)

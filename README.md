@@ -8,16 +8,17 @@ stitching — just the scanning core, built to a real budget.
 
 | | |
 |---|---|
-| **Cost** | $135 (Budget tier) – $150 (Recommended tier) — see why ≤$100 isn't realistic in [BOM.md](BOM.md) |
+| **Cost** | $157 of a $175 cap — see why ≤$100 isn't realistic in [BOM.md](BOM.md) |
+| **Build skill** | No soldering, no multimeter — breadboard + push-fit connectors throughout |
 | **Sensor** | LDRobot LD19 (or LD06), 4500 samples/s, 0.02–12m range |
-| **Runtime** | ≥72 min worst-case, ~3-4h typical, on a single USB-C power bank charge — [proof](ARCHITECTURE.md#5-power-budget) |
+| **Runtime** | ≥3.5h worst-case, ~6-7h typical, on a single USB-C power bank charge — [proof](ARCHITECTURE.md#5-power-budget) |
 | **Output** | Binary PLY point clouds, intensity-colored |
 | **License** | [CC BY-NC-SA 4.0](LICENSE.md) (inherited from PiLiDAR) |
 
 ## Documentation
 
 1. **[BOM.md](BOM.md)** — parts list, current prices, sourcing, and the
-   Recommended-vs-Budget tier comparison
+   no-solder/no-multimeter design constraints this build is built around
 2. **[ARCHITECTURE.md](ARCHITECTURE.md)** — wiring/pinout, motion system,
    and the power budget proving the runtime requirement
 3. **[`src/`](src/)** — Python: LiDAR serial capture, stepper control,

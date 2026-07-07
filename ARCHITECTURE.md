@@ -21,14 +21,15 @@ sphere.
                          └───────┬───────┘
                                  │ mast
                          ┌───────┴───────┐
-                         │   platter      │  rotated by NEMA17/28BYJ-48
+                         │   platter      │  rotated by a 28BYJ-48
                          │ (lazy-susan    │  through 180° over the scan
                          │  bearing)      │
                          └───────┬───────┘
                                  │
         ┌────────────────────────────────────────────┐
-        │  base: Pi Zero 2 W, A4988/ULN2003, boost    │
-        │  converter (Recommended tier only), buttons │
+        │  base: Pi Zero 2 W, breadboard + ULN2003    │
+        │  driver, buttons -- single 5V rail, no      │
+        │  boost converter needed (§4.1)              │
         └────────────────────────────────────────────┘
                                  │
                          USB-C power bank
@@ -76,10 +77,11 @@ PC").
 
 ## 3. GPIO pinout
 
-All pin numbers are **BCM numbering**. This map is carried over from PiLiDAR
-unchanged where the subsystem is unchanged (LiDAR UART/PWM, stepper
-DIR/STEP/microstep, buttons) — no reason to diverge from a proven pin
-assignment.
+All pin numbers are **BCM numbering**, all connections are push-fit Dupont
+jumpers into the Pi Zero 2 **WH**'s pre-soldered header (no soldering
+anywhere — see BOM.md) routed through a breadboard. This map is carried
+over from PiLiDAR unchanged where the subsystem is unchanged (LiDAR
+UART/PWM, buttons) — no reason to diverge from a proven pin assignment.
 
 | Signal | Pi GPIO (BCM) | Physical pin | Notes |
 |---|---|---|---|
@@ -87,33 +89,60 @@ assignment.
 | LiDAR motor speed (PWM) | GPIO18 (PWM0) | 12 | hardware PWM, `rpi-hardware-pwm` |
 | Scan-trigger button | GPIO17 | 11 | to GND, internal pull-up, falling-edge |
 | Power button | GPIO3 | 5 | hardwired wake pin; `dtoverlay=gpio-shutdown` |
-| Stepper DIR | GPIO26 | 37 | A4988 / ULN2003-IN1 |
-| Stepper STEP | GPIO19 | 35 | A4988 STEP (28BYJ-48 tier: see §4.2, needs 4 GPIO instead) |
-| Stepper microstep MS1 | GPIO5 | 29 | A4988 only — no microstep pins on ULN2003 tier |
-| Stepper microstep MS2 | GPIO6 | 31 | A4988 only |
-| Stepper microstep MS3 | GPIO13 | 33 | A4988 only |
+| ULN2003 IN1 | GPIO26 | 37 | default build's stepper driver — see §4.1 |
+| ULN2003 IN2 | GPIO19 | 35 | |
+| ULN2003 IN3 | GPIO5 | 29 | |
+| ULN2003 IN4 | GPIO6 | 31 | |
 | IMU SDA (optional) | GPIO22 | 15 | `i2c-gpio` bus 3 — GPIO2/3 (hw I2C) are unavailable, GPIO3 is the power button |
 | IMU SCL (optional) | GPIO27 | 13 | `i2c-gpio` bus 3 |
-| 5V (LiDAR VCC, Pi power in) | 5V pins | 2, 4 | |
-| 3.3V (A4988 logic VDD) | 3V3 | 1, 17 | |
-| GND (common) | GND | 6, 9, 14, 20, 25, 30, 34, 39 | tie LiDAR GND, driver GND, boost converter GND, button GND all to Pi GND |
+| 5V (LiDAR VCC, ULN2003 VCC, Pi power in) | 5V pins | 2, 4 | single rail — see §4.1, no boost converter in the default build |
+| GND (common) | GND | 6, 9, 14, 20, 25, 30, 34, 39 | tie LiDAR GND, ULN2003 GND, button GND all to Pi GND |
+
+**If you upgrade to the optional NEMA17 + A4988 path** (§4.2 — needs a
+multimeter, not part of the default build): it reuses GPIO26/19 as
+DIR/STEP, adds GPIO5/6/13 as MS1/MS2/MS3, GPIO13 (physical pin 33) being
+the only pin the default ULN2003 build leaves unused. It also adds its own
+3.3V (driver logic VDD, pin 1 or 17) and a boost-converter GND to the
+common ground.
 
 ## 4. Motion system
 
-### 4.1 Recommended tier: NEMA17 + A4988
+### 4.1 Default build: 28BYJ-48 + ULN2003 (no multimeter, no soldering)
 
-- **Direct drive, no gearbox.** PiLiDAR uses a 3D-printed planetary
-  reduction (~3.71:1) between motor and turntable. We skip it: at 16×
-  microstepping a NEMA17 alone gives 3200 microsteps/rev = 0.1125°/step,
-  already finer than the LiDAR's native ~0.8° vertical resolution, and the
-  motor has roughly 10× the torque this load (a few-hundred-gram printed
-  mast) needs even ungeared. Removing the gearbox removes a finicky
-  multi-part print and a cost line, at no resolution cost. See
-  [PRINTS.md](PRINTS.md) for the tradeoff discussion.
-- **The lazy-susan bearing carries the load, not the motor shaft.** The
-  platter sits on the hardware bearing; the motor connects via a printed hub
-  that only has to transmit torque. This keeps side-load off the motor's
+This is the build BUILD.md walks through. The ULN2003 board just switches
+4 GPIO outputs to the motor's 4 coils in sequence (`src/stepper_driver.py`'s
+`ULN2003` class) — there's no current limit to set and nothing to measure,
+unlike a bipolar driver. It runs natively at 5V, so **the whole build is a
+single 5V rail**: battery → Pi → (Pi's own 5V GPIO pins) → LiDAR + ULN2003.
+No boost converter anywhere.
+
+- **Direct drive, no gearbox.** Same reasoning as PiLiDAR's geared design,
+  simplified: the 28BYJ-48's own internal ~64:1 gearbox already gives
+  ~4096 steps/rev = 0.088°/step at its output shaft — finer than the
+  LiDAR's native ~0.8° vertical resolution — and has enough torque for a
+  few-hundred-gram printed mast without any additional external gearing.
+  See [PRINTS.md](PRINTS.md) for the mechanical layout.
+- **The lazy-susan bearing carries the load, not the motor shaft** — the
+  platter sits on the hardware bearing; the motor connects via a printed
+  hub that only has to transmit torque, keeping side-load off the motor's
   small internal bearings.
+- **The motor's cable plugs directly into the ULN2003 board's onboard
+  socket** — no crimping, no soldering, it's sold as a matched pair.
+- **Torque/speed margin is real but smaller than a NEMA17's** (roughly
+  1/10th the holding torque) — see [BOM.md](BOM.md#optional-upgrades-not-included-in-the-157-total)
+  for when that matters and the NEMA17 upgrade path below.
+
+### 4.2 Optional upgrade: NEMA17 + A4988 (needs a multimeter)
+
+Not part of the default build — described here for when/if you pick up a
+multimeter and want more torque/speed margin. `src/stepper_driver.py`'s
+`A4988` class and `models/motor_hub_nema17.scad` already support it; set
+`STEPPER.DRIVER` to `"A4988"` in `config.json` to switch.
+
+- **Direct drive, no gearbox.** At 16× microstepping a NEMA17 alone gives
+  3200 microsteps/rev = 0.1125°/step, finer than the LiDAR's native ~0.8°
+  resolution, with roughly 10× the torque this load needs even ungeared —
+  no need for PiLiDAR's 3D-printed planetary reduction.
 - **Microstep truth table** (MS1/MS2/MS3 → resolution), standard A4988:
 
   | MS1 | MS2 | MS3 | Microsteps |
@@ -124,102 +153,97 @@ assignment.
   | High | High | Low | 8 |
   | High | High | High | 16 ← used |
 
-- **Current limit (Vref).** Set the driver's onboard trimpot for **0.5 A/phase**
-  — comfortable torque margin for this load without wasting battery power as
-  heat. Formula for the common 0.05 Ω sense-resistor A4988 breakout (verify
-  your board's sense resistor against its silkscreen/datasheet before
-  trusting this number): `I_limit = V_ref × 2.5`, so `V_ref = I_limit / 2.5 =
-  0.2 V`. Measure with a multimeter between the trimpot wiper and GND, motor
-  **disconnected**, before wiring it up.
-- **SLEEP/RESET/ENABLE.** We never need to put the driver to sleep or reset
-  it from software, so wire it to always be active: bridge `SLEEP` to
-  `RESET` with a short jumper directly on the driver board, tie that joined
-  pair to the driver's logic `VDD` (3.3V), and tie `ENABLE` (active-low)
-  straight to `GND`.
-- **VMOT (motor power):** 12 V from the MT3608 boost converter, trimmed with
-  its onboard pot (measure with a multimeter before connecting the driver —
-  cheap boost modules can overshoot their marked voltage). **Never run VMOT
-  below ~8 V** — the A4988's internal charge pump needs it, and the driver
-  can behave unreliably (missed steps, or nothing at all) below that,
-  which is exactly why we boost 5V→12V rather than feeding the driver
-  straight off the battery rail.
-
-### 4.2 Budget tier: 28BYJ-48 + ULN2003
-
-Runs natively off the 5V rail — no boost converter, no Vref tuning, no
-sleep/reset jumpering. Trades away: A4988-style microstep pin selection (the
-ULN2003 board just takes 4 direct GPIO outputs, one per motor coil, sequenced
-in software — see `src/stepper_driver.py`, which auto-detects which driver
-class to instantiate from `config.json`), and roughly 10× the torque margin
-of the NEMA17 (see [BOM.md](BOM.md#quality-difference-recommended-vs-budget)
-for why that margin matters or doesn't for your specific build).
-
-| Signal | Pi GPIO (BCM) |
-|---|---|
-| ULN2003 IN1 | GPIO26 |
-| ULN2003 IN2 | GPIO19 |
-| ULN2003 IN3 | GPIO5 |
-| ULN2003 IN4 | GPIO6 |
+- **Current limit (Vref) — this is the step that needs a multimeter.** Set
+  the driver's onboard trimpot for **0.5 A/phase** — comfortable torque
+  margin for this load without wasting battery power as heat. Formula for
+  the common 0.05 Ω sense-resistor A4988 breakout (verify your board's
+  sense resistor against its silkscreen/datasheet before trusting this
+  number): `I_limit = V_ref × 2.5`, so `V_ref = I_limit / 2.5 = 0.2 V`.
+  Measure with a multimeter between the trimpot wiper and GND, motor
+  **disconnected**, before wiring it up. Get this wrong and you either
+  stall the motor (limit too low) or overheat the driver (limit too high) —
+  this is precisely the failure mode the default ULN2003 build has no
+  equivalent of.
+- **SLEEP/RESET/ENABLE.** Bridge `SLEEP` to `RESET` with a short jumper
+  directly on the driver board, tie that joined pair to the driver's logic
+  `VDD` (3.3V), and tie `ENABLE` (active-low) straight to `GND`.
+- **VMOT (motor power) — the other multimeter step.** 12V from a boost
+  converter (e.g. MT3608, 5V→12V), trimmed with its onboard pot and
+  **verified with a multimeter before connecting the driver** — cheap
+  boost modules can ship set to their maximum (sometimes 28V+). **Never
+  run VMOT below ~8V** — the A4988's internal charge pump needs it, and
+  the driver can behave unreliably below that, which is why this path
+  needs a boost converter at all rather than feeding the driver straight
+  off the 5V battery rail.
 
 ## 5. Power budget
 
 **Requirement: ≥15 minutes of continuous operation with the LiDAR, stepper,
 and Pi all active simultaneously (the actual worst case during a scan).**
 
+This is for the default build: Pi + LiDAR + 28BYJ-48/ULN2003, all off one
+5V rail, 10,000 mAh power bank (BOM.md). No boost converter in the loop —
+one less conversion-efficiency loss to account for.
+
 ### Worst-case bound (the proof)
 
 Deliberately pessimistic on every number, so this is a floor, not an
 expectation:
 
-| Load | Recommended tier | Budget tier |
-|---|---|---|
-| Pi Zero 2 W (CPU+Wi-Fi, published worst case) | 0.50 A @ 5V = 2.50 W | 2.50 W |
-| LD19 LiDAR (datasheet current, upper end) | 0.45 A @ 5V = 2.25 W | 2.25 W |
-| Stepper + driver, current-limited¹ | 1.0 A @ 12V = 12 W → ÷0.8 boost eff. = **15.0 W** | 0.4 A @ 5V = **2.0 W** (no boost) |
-| **Total draw** | **19.75 W** (≈3.95 A @ 5V) | **6.75 W** (≈1.35 A @ 5V) |
+| Load | Draw |
+|---|---|
+| Pi Zero 2 W (CPU+Wi-Fi, published worst case) | 0.50 A @ 5V = 2.50 W |
+| LD19 LiDAR (datasheet current, upper end) | 0.45 A @ 5V = 2.25 W |
+| 28BYJ-48/ULN2003 (datasheet worst-case combined coil current) | 0.40 A @ 5V = 2.00 W |
+| **Total draw** | **6.75 W** (≈1.35 A @ 5V) |
 
-<sup>¹ Modeled as *both* motor phases simultaneously at the A4988's 0.5 A/phase
-current-limit setpoint — physically the two phases are in quadrature so real
-combined current never actually reaches 1.0 A, but treating it as if it did
-gives a deliberately-loose, safe upper bound. The 28BYJ-48/ULN2003 figure is
-its datasheet worst-case combined coil current.</sup>
-
-| | Recommended (10,000 mAh) | Budget (5,000 mAh) |
-|---|---|---|
-| Nominal energy (Ah × 3.7 V) | 37.0 Wh | 18.5 Wh |
-| × 80% (aged-battery/cold derating) | 29.6 Wh | 14.8 Wh |
-| × 80% (USB boost conversion, low end) | **23.68 Wh usable** | **11.84 Wh usable** |
-| ÷ worst-case draw | 23.68 / 19.75 W | 11.84 / 6.75 W |
-| **Runtime floor** | **71.9 min** | **105.2 min** |
-| **Margin over the 15-min requirement** | **4.8×** | **7.0×** |
-
-Both tiers clear the requirement with several times over margin, *even under
-deliberately pessimistic assumptions*. (Interesting wrinkle: the Budget
-tier's floor is actually higher, because it skips the boost converter's
-conversion loss — it trades motor torque margin for power-system
-simplicity/efficiency. See BOM.md for the full tradeoff.)
+| | |
+|---|---|
+| Nominal energy (10 Ah × 3.7 V) | 37.0 Wh |
+| × 80% (aged-battery/cold derating) | 29.6 Wh |
+| × 80% (USB boost conversion, low end — this is the power bank's own internal 3.7V-cell-to-5V-output conversion, not an external boost converter) | **23.68 Wh usable** |
+| ÷ worst-case draw | 23.68 / 6.75 W |
+| **Runtime floor** | **210.5 min (3h 31m)** |
+| **Margin over the 15-min requirement** | **14.0×** |
 
 ### Typical case (practical expectation)
 
-Real Vref-limited stepper draw, fresh battery, mixed CPU/Wi-Fi load:
+Real (lighter) stepper draw, fresh battery, mixed CPU/Wi-Fi load:
 
-| | Recommended | Budget |
-|---|---|---|
-| Total typical draw | ≈8.3 W | ≈4.75 W |
-| Usable energy (100% capacity × 88% conversion) | 32.6 Wh | 16.3 Wh |
-| **Typical runtime** | **≈3h 55m** | **≈3h 25m** |
+| | |
+|---|---|
+| Total typical draw | ≈4.75 W |
+| Usable energy (100% capacity × 88% conversion) | 32.6 Wh |
+| **Typical runtime** | **≈6h 51m** |
 
-In practice, expect a full afternoon of scanning (8–10 individual scans at
-~1.5–2 min each, see §6) per charge, not a single 15-minute window.
+In practice, expect a full day of scanning (dozens of individual scans at
+~1.5–2 min each, see §6) per charge, not a single 15-minute window — the
+14× worst-case margin is that generous mostly because dropping the boost
+converter (§4.1) removed both a conversion-efficiency loss and a
+several-watt load at the same time.
+
+### If you add the optional NEMA17 + A4988 upgrade (§4.2)
+
+That path reintroduces a boost converter and a heavier motor load — budget
+roughly 12-15W for the stepper+driver+boost stage (current-limited to
+0.5A/phase, ~80% boost efficiency) instead of the 2W above. Total draw
+becomes ≈17-20W worst case, which against the same 23.68Wh usable energy
+still clears the 15-minute requirement (≈70-85 min floor, 4.7-5.7× margin)
+— just with noticeably less margin than the default build, and only worth
+doing once you have the multimeter that path requires anyway.
 
 ## 6. Scan duration (informational, not a hard requirement)
 
-At the default resolution (0.225°/microstep azimuth step, 800 steps over the
-180° sweep) the LiDAR itself is the pacing element: 4500 samples/s ÷ 12
-samples/package = 375 packages/s, and the scan needs
-`800 steps × ~38 packages/step ≈ 30,400 packages`, i.e. **≈81 seconds** per
-full 360°×180° scan. Tunable via `TARGET_RES` in `config.json`, exactly like
-PiLiDAR.
+At the default resolution (`TARGET_RES: 0.225`, which the 28BYJ-48's 4096
+steps/rev turns into 682 steps of ~0.264°/step over the 180° sweep) the
+LiDAR itself is the pacing element: 4500 samples/s ÷ 12 samples/package =
+375 packages/s, and the scan needs
+`682 steps × ~38 packages/step ≈ 25,900 packages`, i.e. **≈69 seconds** per
+full 360°×180° scan. Tunable via `TARGET_RES` in `config.json`, exactly
+like PiLiDAR. (The optional NEMA17 upgrade's finer 3200 steps/rev would
+give ~0.1125°/step and a correspondingly longer scan at the same
+`TARGET_RES` — `python3 config.py` prints the actual numbers for whatever
+`config.json` currently has configured.)
 
 ## 7. Data flow
 

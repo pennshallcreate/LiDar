@@ -49,8 +49,8 @@
     },
 
     "STEPPER": {
-        "_comment": "DRIVER selects A4988 (NEMA17, Recommended tier) or ULN2003 (28BYJ-48, Budget tier). See ARCHITECTURE.md section 4.",
-        "DRIVER": "A4988",
+        "_comment": "DRIVER selects ULN2003 (28BYJ-48, the default build -- no multimeter or soldering needed) or A4988 (NEMA17, optional upgrade -- needs a multimeter). See ARCHITECTURE.md section 4.",
+        "DRIVER": "ULN2003",
 
         "pins": {
             "DIR_PIN": 26,
@@ -66,7 +66,8 @@
         "STEPPER_RES": 200,
         "STEP_ANGLE": null,
 
-        "ULN2003_STEPS_PER_REV": 4096
+        "ULN2003_STEPS_PER_REV": 4096,
+        "ULN2003_STEP_DELAY": 0.0015
     },
 
     "BUTTONS": {

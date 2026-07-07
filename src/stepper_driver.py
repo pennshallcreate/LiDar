@@ -30,7 +30,7 @@ def Stepper(config):
                      gear_ratio=config.get("STEPPER", "GEAR_RATIO"))
     if driver == "ULN2003":
         return ULN2003(config.get("STEPPER", "uln2003_pins"),
-                        delay=config.get("STEPPER", "STEP_DELAY"),
+                        delay=config.get("STEPPER", "ULN2003_STEP_DELAY"),
                         steps_per_rev=config.get("STEPPER", "ULN2003_STEPS_PER_REV"),
                         gear_ratio=config.get("STEPPER", "GEAR_RATIO"))
     raise ValueError(f"Unknown STEPPER.DRIVER: {driver!r} (expected 'A4988' or 'ULN2003')")
