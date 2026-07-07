@@ -10,6 +10,7 @@ Adapted from PiLiDAR's gpio_interrupt.py
 """
 
 import subprocess
+import sys
 import time
 import os
 
@@ -28,7 +29,11 @@ def _start_callback(_channel):
         print("Scan already running, ignoring button press.")
         return
 
-    _process = subprocess.Popen(["nice", "-n", "-10", "python3", SCAN_SCRIPT])
+    # sys.executable, not a literal "python3": this daemon is launched by
+    # systemd via the venv's interpreter (see BUILD.md), and a bare
+    # "python3" subprocess call would resolve via PATH to the system
+    # interpreter instead, which doesn't have the venv's packages installed.
+    _process = subprocess.Popen(["nice", "-n", "-10", sys.executable, SCAN_SCRIPT])
     print("Scan started, pid:", _process.pid)
 
 
