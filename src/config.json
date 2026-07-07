@@ -1,0 +1,91 @@
+{
+    "ENABLE_LIDAR": true,
+    "ENABLE_IMU": false,
+    "ENABLE_3D": true,
+
+    "SCANS_ROOT": "scans",
+    "ANGULAR_DIGITS": 3,
+
+    "LIDAR": {
+        "_comment": "DEVICE selects which sub-block below is used. LD06 and LD19 share the same packet protocol.",
+        "DEVICE": "LD19",
+
+        "LD19": {
+            "PORT": "/dev/ttyS0",
+            "BAUDRATE": 230400,
+            "SAMPLING_RATE": 4500,
+            "OUT_LEN": 38,
+            "OFFSET": 0,
+            "PWM_COEFFS": [33.3174, -0.8497]
+        },
+        "LD06": {
+            "PORT": "/dev/ttyS0",
+            "BAUDRATE": 230400,
+            "SAMPLING_RATE": 4500,
+            "OUT_LEN": 38,
+            "OFFSET": 0,
+            "PWM_COEFFS": [33.3174, -0.8497]
+        },
+
+        "LIDAR_OFFSET_ANGLE": 0.0,
+        "TARGET_RES": "0.225",
+        "TARGET_SPEED": 10,
+        "RAW_NAME": "_lidar.pkl",
+
+        "PWM": {
+            "ENABLE": true,
+            "CHANNEL": 0,
+            "FREQ": 30000
+        },
+
+        "protocol": {
+            "start_byte": "54",
+            "dlength_byte": "2c",
+            "dlength": 12,
+            "package_len": 47,
+            "CRC_PATH": "crc_table.json",
+            "CRC_TABLE": null
+        }
+    },
+
+    "STEPPER": {
+        "_comment": "DRIVER selects A4988 (NEMA17, Recommended tier) or ULN2003 (28BYJ-48, Budget tier). See ARCHITECTURE.md section 4.",
+        "DRIVER": "A4988",
+
+        "pins": {
+            "DIR_PIN": 26,
+            "STEP_PIN": 19,
+            "MS_PINS": [5, 6, 13]
+        },
+        "uln2003_pins": [26, 19, 5, 6],
+
+        "SCAN_ANGLE": 180,
+        "GEAR_RATIO": 1,
+        "MICROSTEPS": 16,
+        "STEP_DELAY": 0.0005,
+        "STEPPER_RES": 200,
+        "STEP_ANGLE": null,
+
+        "ULN2003_STEPS_PER_REV": 4096
+    },
+
+    "BUTTONS": {
+        "SCAN_PIN": 17,
+        "POWER_PIN": 3
+    },
+
+    "IMU": {
+        "i2c_bus": 3,
+        "device_address": 104,
+        "frequency": 50
+    },
+
+    "3D": {
+        "Y_OFFSET": 0.0,
+        "Z_OFFSET": 0.0,
+        "SCALE": 0.001,
+        "EXT": "ply",
+        "ASCII": false,
+        "COLOR_MODE": "gradient"
+    }
+}
