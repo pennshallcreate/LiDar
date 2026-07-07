@@ -48,7 +48,8 @@ train follows PiLiDAR's own reference design, not scan quality per se — see
 
 If you can tolerate a used/pulled sensor from eBay (robot-vacuum repair
 parts, condition unverified) the LiDAR line can drop to ~$30–45, which would
-pull the Budget build to ~$100–115. That's a real option; it's called out
+pull the Budget build to ~$93–113 ($135 − the $67 sourced-LiDAR line + a
+$25–45 used one). That's a real option; it's called out
 under [cost-reduction levers](#further-cost-reduction-levers-not-in-the-totals-above)
 rather than baked into the default BOM because "condition unknown, no
 warranty, connector sometimes needs rework" isn't something this document can
@@ -140,7 +141,7 @@ since the code has hooks for both.
 
 ## Further cost-reduction levers (not in the totals above)
 
-If you want to push toward $100–120 and can accept the tradeoffs:
+If you want to push toward $93–113 (see above) and can accept the tradeoffs:
 
 - **Used/pulled LD06/LD19 module from eBay** (harvested from a broken robot
   vacuum): ~$25–45. These are the exact same sensors OEM'd into many
