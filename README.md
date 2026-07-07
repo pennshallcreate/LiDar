@@ -8,7 +8,8 @@ stitching — just the scanning core, built to a real budget.
 
 | | |
 |---|---|
-| **Cost** | $157 of a $175 cap — see why ≤$100 isn't realistic in [BOM.md](BOM.md) |
+| **Cost** | $173 of a $175 cap — see why ≤$100 isn't realistic in [BOM.md](BOM.md) |
+| **Sourcing** | 100% Amazon, Prime-eligible — see [Parts.md](Parts.md) for the plain shopping list |
 | **Build skill** | No soldering, no multimeter — breadboard + push-fit connectors throughout |
 | **Sensor** | LDRobot LD19 (or LD06), 4500 samples/s, 0.02–12m range |
 | **Runtime** | ≥3.5h worst-case, ~6-7h typical, on a single USB-C power bank charge — [proof](ARCHITECTURE.md#5-power-budget) |
@@ -19,6 +20,7 @@ stitching — just the scanning core, built to a real budget.
 
 1. **[BOM.md](BOM.md)** — parts list, current prices, sourcing, and the
    no-solder/no-multimeter design constraints this build is built around
+   (**[Parts.md](Parts.md)** has just the shopping list, no explanation)
 2. **[ARCHITECTURE.md](ARCHITECTURE.md)** — wiring/pinout, motion system,
    and the power budget proving the runtime requirement
 3. **[`src/`](src/)** — Python: LiDAR serial capture, stepper control,
