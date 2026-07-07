@@ -6,17 +6,19 @@ camera / panorama-texturing half of PiLiDAR is dropped entirely — this is a
 LiDAR-only scanner that exports intensity-shaded PLY point clouds.
 
 **Builder constraints this BOM is designed around: no soldering, no
-multimeter, budget cap $175.** Every connection below is push-fit
-(breadboard + Dupont jumpers + plug-in connectors) and nothing requires
-measuring a voltage or current to set up — see
+multimeter, budget cap $175, every part on Amazon.** Every connection below
+is push-fit (breadboard + Dupont jumpers + plug-in connectors) and nothing
+requires measuring a voltage or current to set up — see
 [the no-solder/no-multimeter design section](#design-for-no-soldering-and-no-multimeter)
-for what that changed from a typical stepper-driven build.
+for what that changed from a typical stepper-driven build. See
+[Parts.md](Parts.md) for just the shopping list with no explanation.
 
 ## TL;DR
 
 | | |
 |---|---|
-| **Total** | **$157** (of a $175 cap — see [buffer note](#whats-the-18-of-headroom-for)) |
+| **Total** | **$173** (of a $175 cap — see [buffer note](#whats-the-2-of-headroom-for)) |
+| Sourcing | 100% Amazon, Prime-eligible |
 | Turntable drive | 28BYJ-48 + ULN2003 — plug-in connector, no current-limit tuning, no multimeter |
 | Wiring | Solderless breadboard + Dupont jumpers throughout |
 | Battery runtime, worst case / typical | see [ARCHITECTURE.md § Power budget](ARCHITECTURE.md#5-power-budget) |
@@ -56,36 +58,21 @@ Both are gone from this build. Instead:
   power-on checklist is entirely "does it visibly move / does it print a
   reading" checks, not multimeter readings.
 
-## You have Amazon Prime — how that changes sourcing
+## Everything on Amazon
 
-Every part below except the LiDAR is already sourced on Amazon by design
-(see [Sourcing rule](#sourcing-rule)), so with Prime essentially the whole
-BOM ships free in 1-2 days, and you can likely get it in one or two
-orders/boxes. The one exception is the LiDAR:
+Every part below is sourced on Amazon, Prime-eligible — the whole BOM
+should ship free in 1-2 days, likely in one or two boxes. This trades
+away the cheaper overseas LiDAR sourcing (~$67 via a China-based reseller
+like sunsky-online, 1-3 week shipping, no easy returns) for Prime speed
+and Amazon's return policy — worth it on its own for the LiDAR
+specifically, since a DOA sensor is much harder to diagnose without a
+multimeter, and much easier to just exchange.
 
-- **Recommended: sunsky-online, $67.** Cheapest verified price for this
-  exact part, but it ships from overseas — no Prime, and delivery is
-  more like 1-3 weeks.
-- **Prime-eligible alternative: the same part on Amazon, $90-170**
-  ([Waveshare D300](https://www.amazon.com/Waveshare-DTOF-LIDAR-LD19-Omni-Directional/dp/B0B3RWKJ1P)
-  or [WayPonDEV FHL-LD19](https://www.amazon.com/DTOF-D300-Distance-Obstacle-Education/dp/B0B1V8D36H)) —
-  2-day Prime shipping and Amazon's return policy if the unit arrives
-  DOA, at a real cost premium. **Only the low end of that range ($90)
-  fits inside the $175 cap** (total becomes $180 — $5 over; still cheaper
-  than most single-tier alternatives and arguably worth it if a fast,
-  easy-return sensor matters more to you than $23). The higher end
-  ($170) does not fit this budget at all.
-
-Given no multimeter for diagnosing a misbehaving sensor, the easy Amazon
-return policy is a genuine practical argument for paying the premium — your
-call. The rest of this doc assumes the $67 sunsky-online sourcing since
-that's what fits the cap with room to spare.
-
-## Parts list — $157
+## Parts list — $173
 
 | Part | Price | Source | Notes |
 |---|---|---|---|
-| **LDRobot LD19 LiDAR** ("D300" kit: sensor + cable) | **$67** | [sunsky-online](https://www.sunsky-online.com/p/DIY0289/Waveshare-D300-Developer-Kit-DTOF-Laser-Ranging-Sensor-360-Omni-Directional-Lidar-UART-Bus.htm) | 4500 samples/s, 0.02–12 m, 5V UART+PWM. **Check the product photos before ordering**: you want a cable ending in loose/Dupont-style female connector pins (the standard way these wire to a Pi, no tool needed) — if yours instead ends in a bare-wire or unfamiliar connector, the JST-to-Dupont adapter line below is your fallback. LD06 is a drop-in alternative the code already supports. See [Amazon Prime alternative](#you-have-amazon-prime--how-that-changes-sourcing) above. |
+| **LDRobot LD19 LiDAR** ("D300" kit: sensor + cable) | **$90** | [Amazon: WayPonDEV FHL-LD19](https://www.amazon.com/DTOF-D300-Distance-Obstacle-Education/dp/B0B1V8D36H) (also sold as [Waveshare D300](https://www.amazon.com/Waveshare-DTOF-LIDAR-LD19-Omni-Directional/dp/B0B3RWKJ1P) — compare current prices, these fluctuate more than most Amazon listings, seen $90-170) | 4500 samples/s, 0.02–12 m, 5V UART+PWM. **Check the product photos before ordering**: you want a cable ending in loose/Dupont-style female connector pins (the standard way these wire to a Pi, no tool needed). If yours instead ends in a bare-wire or unfamiliar connector, search Amazon for a small "JST to Dupont adapter cable" (~$7) — not included in the total above since most listings don't need it. LD06 is a drop-in alternative the code already supports. |
 | **Raspberry Pi Zero 2 WH** (pre-soldered header — important, this is what makes the "no soldering" claim work) | **$15** | [Amazon](https://www.amazon.com/Raspberry-Pi-Zero-2-WH/dp/B0DB2JBD9C) | Quad-core Cortex-A53, 40-pin GPIO, Wi-Fi for headless scan pull-off. Do not buy the header-less "W" — you'd need to solder the header on yourself. |
 | **microSD card, 32 GB, A1/A2** | **$6** | [Amazon](https://www.amazon.com/SanDisk-32GB-MicroSDHC-Memory-Card/dp/B003WGJYCY) | 16 GB would work too; 32 GB cards are cheap enough to just default to. |
 | **4" lazy-susan turntable bearing** (2-pack) | **$9** | [Amazon](https://www.amazon.com/FKG-Inch-Susan-Bearing-Turntable/dp/B08B137XQL) | Carries the platter's radial/thrust load — screws only, no soldering. |
@@ -95,23 +82,23 @@ that's what fits the cap with room to spare.
 | **Tactile push-button modules** (pin-header breakout, pack) | **$6** | [Amazon](https://www.amazon.com/s?k=tactile+push+button+module+breakout+3pin) | Small PCB with the switch already on it — pushes into the breadboard or connects via Dupont wire, unlike a bare panel-mount switch which typically wants solder or crimp terminals. Need 2: scan-trigger + power. |
 | **Dupont jumper wire kit** (M-M / M-F / F-F, assorted lengths) | **$7** | [Amazon](https://www.amazon.com/s?k=dupont+jumper+wire+kit+mm+mf+ff) | All signal wiring in this build is one of these three cable types. Get the multi-pack, you'll use more than you expect. |
 | **M3 fastener assortment** (screws, standoffs, nuts) | **$6** | [Amazon](https://www.amazon.com/s?k=m3+screw+standoff+nut+assortment+kit) | Mechanical assembly only — a screwdriver, not a soldering iron. |
-| **JST-to-Dupont adapter cable pack** (LiDAR connector contingency) | **$7** | [Amazon](https://www.amazon.com/s?k=jst+to+dupont+adapter+cable+pack) | Only needed if your LiDAR's cable *doesn't* already end in Dupont-style pins (see the LiDAR row above) — cheap insurance against the one connector in this build that isn't 100% guaranteed from a written spec sheet. |
 
 <sub>Treat every price in this document as "verified as of 2026-07-07,
 reverify before ordering" — ±5–10% week-to-week retail variance is normal
-for these parts. Prices exclude tax; shipping is free on the Amazon/Prime
-parts and typically a few dollars for the LiDAR if sourced overseas.</sub>
+for most of these parts, but the LiDAR specifically has swung $90-170
+across resellers in the same search session, so compare listings before
+buying it in particular. Shipping is free on all parts with Prime.</sub>
 
-### What's the $18 of headroom for?
+### What's the $2 of headroom for?
 
-$157 against a $175 cap leaves $18 of slack. Deliberately not spent on
-anything by default — it's there as a buffer for price drift between now
-and when you order, or to absorb the Amazon-Prime LiDAR alternative
-above (which alone puts you $5 over, still close). If you want to spend
-it on something concrete instead of holding it as buffer, the optional
-upgrades below are the two reasonable options.
+Not much — $173 against a $175 cap leaves only $2 of slack, almost all of
+which went into paying the Amazon/Prime premium on the LiDAR (~$23 more
+than the cheapest overseas sourcing). If the LiDAR listing you find is
+priced above the $90 used here, something else in this list has to come
+down to compensate — the [cost-reduction levers](#further-cost-reduction-levers-not-reflected-in-the-173-total)
+below are the places with room to give.
 
-## Optional upgrades (not included in the $157 total)
+## Optional upgrades (not included in the $173 total)
 
 Out of scope per the brief ("HQ camera / RGB coloring is optional — drop
 it to hit budget") but documented as fork points since the code has hooks
@@ -124,23 +111,15 @@ for them.
 | **NEMA17 + A4988 motor upgrade** | net +$10ish, **requires acquiring a multimeter** | More torque/speed margin (~10× holding torque) | The "standard" DIY-scanner drive train this BOM deliberately avoids — see the design section above. `src/stepper_driver.py`'s `A4988` class and `models/motor_hub_nema17.scad` already support this if you ever pick up a multimeter; [ARCHITECTURE.md § 4.2](ARCHITECTURE.md#42-optional-upgrade-nema17--a4988-needs-a-multimeter) and BUILD.md's appendix have the setup steps. Not recommended as a first build without one. |
 | **STL-27L sensor instead of LD19** | +$90–95 | 21,600 samples/s vs 4,500 (~5×), same 12 m range | Meaningfully denser clouds, but the sensor alone costs more than half this entire build. Only makes sense if you've abandoned the budget constraint entirely. |
 
-## Sourcing rule
+## Further cost-reduction levers (not reflected in the $173 total)
 
-Per the brief, the **LiDAR is sourced wherever it's cheapest** (it is *not*
-counted against the "majority on Amazon" rule). **Every other part above is
-on Amazon** — that's the one, explicitly-allowed exception, flagged here
-and nowhere else.
+If the LiDAR listing you find runs above $90 and you need to claw back
+some budget:
 
-## Further cost-reduction levers (not reflected in the $157 total)
-
-- **Used/pulled LD06/LD19 module from eBay**: ~$25–45 instead of $67,
-  pulling the total to **~$115–135**. These are the exact same sensors
-  OEM'd into many robot-vacuum models. Condition, connector, and firmware
-  version are not guaranteed — verify the UART protocol matches (230400
-  baud / 12 points-per-packet framing, see ARCHITECTURE.md) before
-  committing to the build around it. Harder to return/exchange than an
-  Amazon order if it doesn't work, which matters more without a
-  multimeter to help diagnose a bad unit.
 - **Skip the spare 28BYJ-48/ULN2003 set**: −$4 or so. Fine if you're
   confident in your wiring.
 - **16 GB instead of 32 GB microSD**: −$1 to −$2.
+- **Shop around between the two Amazon LiDAR listings above** (and any
+  other "D300"/"FHL-LD19" listings you find) — this single line item has
+  the widest price spread of anything in the BOM, so a few minutes of
+  comparing could easily be worth more than every other lever combined.
