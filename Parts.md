@@ -8,7 +8,7 @@ Shopping list only — for prices, sourcing notes, and design rationale see
 | LDRobot LD19 LiDAR ("D300" kit) | $90 | [Amazon](https://www.amazon.com/DTOF-D300-Distance-Obstacle-Education/dp/B0B1V8D36H) |
 | Raspberry Pi Zero 2 WH | $15 | [Amazon](https://www.amazon.com/Raspberry-Pi-Zero-2-WH/dp/B0DB2JBD9C) |
 | microSD card, 32 GB, A1/A2 | $6 | [Amazon](https://www.amazon.com/SanDisk-32GB-MicroSDHC-Memory-Card/dp/B003WGJYCY) |
-| 4" lazy-susan turntable bearing (2-pack) | $9 | [Amazon](https://www.amazon.com/FKG-Inch-Susan-Bearing-Turntable/dp/B08B137XQL) |
+| 4" square lazy-susan turntable bearing (2-pack) | $9 | [Amazon](https://www.amazon.com/Turntable-Bearings-Hardware-Rotating-Bearing/dp/B09R1S2JNB) — commodity part, [any in-stock 4" square one works](https://www.amazon.com/s?k=4+inch+square+lazy+susan+turntable+bearing) |
 | 28BYJ-48 + ULN2003 stepper kit (2-set) | $9 | [Amazon](https://www.amazon.com/KOOKYE-28BYJ-48-Stepper-ULN2003-Arduino/dp/B019TOJRC4) |
 | USB-C PD power bank, 10,000 mAh | $18 | [Amazon](https://www.amazon.com/Anker-Portable-Charger-Charging-Battery/dp/B0CZ9M6X8Q) |
 | Half-size solderless breadboard (2-pack) | $7 | [Amazon](https://www.amazon.com/s?k=half+size+solderless+breadboard+2+pack) |
