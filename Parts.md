@@ -16,6 +16,22 @@ Shopping list only — for prices, sourcing notes, and design rationale see
 | Dupont jumper wire kit (M-M / M-F / F-F) | $7 | [Amazon](https://www.amazon.com/s?k=dupont+jumper+wire+kit+mm+mf+ff) |
 | M3 fastener assortment (screws, standoffs, nuts) | $6 | [Amazon](https://www.amazon.com/s?k=m3+screw+standoff+nut+assortment+kit) |
 
+## Assumed already on hand (not in the $173 total — check before ordering)
+
+| Item | If you don't have one |
+|---|---|
+| **Micro-USB cable** (power bank → Pi; the Pi Zero 2 W's power port is micro-USB, *not* USB-C) | ~$5–6, [Amazon](https://www.amazon.com/s?k=usb+a+to+micro+usb+cable) |
+| SD-card slot or USB reader on your computer (one-time OS flash; the SanDisk card usually includes a full-size SD adapter) | ~$7, [Amazon](https://www.amazon.com/s?k=usb+sd+card+reader) |
+| Zip ties + a hook-and-loop strap or bungee (wire routing, battery mounting) | a few $, any store |
+| Phillips screwdriver + small hex/Allen key | — |
+
+With those on hand, the table above is the complete set of wires and
+electronics — every electrical connection in the build is either a Dupont
+jumper from the kit or a plug-in cable included with its part. The one
+exception to verify on arrival: the LiDAR's cable end (see BOM.md's LiDAR
+row — a ~$7 JST-to-Dupont adapter is the fallback if it isn't
+Dupont-style).
+
 ## Optional add-ons (not in the $173 total)
 
 | Part | Price | Link |

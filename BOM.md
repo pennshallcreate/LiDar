@@ -98,6 +98,27 @@ priced above the $90 used here, something else in this list has to come
 down to compensate — the [cost-reduction levers](#further-cost-reduction-levers-not-reflected-in-the-173-total)
 below are the places with room to give.
 
+### Assumed already on hand (not in the $173 total — check before ordering)
+
+The parts table above is the complete set of wires and electronics *for
+the scanner itself* — every electrical connection is either a Dupont
+jumper from the kit or a plug-in cable included with its part. It assumes
+you already own these common items; check before ordering and add any
+you're missing:
+
+- **A micro-USB cable** to power the Pi from the power bank. The Pi Zero
+  2 W's power port is **micro-USB, not USB-C**, and the power bank won't
+  necessarily include that cable. Nearly every household has one from an
+  older phone or gadget; if not, ~$5–6
+  ([Amazon](https://www.amazon.com/s?k=usb+a+to+micro+usb+cable)).
+- **A way to get the microSD card into your computer** for the one-time
+  OS flash — an SD slot (the SanDisk card usually ships with a full-size
+  SD adapter) or a ~$7 USB reader
+  ([Amazon](https://www.amazon.com/s?k=usb+sd+card+reader)).
+- **Zip ties and a hook-and-loop strap or bungee** (wire routing along
+  the mast, battery mounting — BUILD.md's tools list).
+- Phillips screwdriver and a small hex/Allen key.
+
 ## Optional upgrades (not included in the $173 total)
 
 Out of scope per the brief ("HQ camera / RGB coloring is optional — drop
