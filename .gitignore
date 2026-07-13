@@ -1,0 +1,10 @@
+# Python
+__pycache__/
+*.pyc
+
+# runtime scan output (raw pickles + exported PLY files)
+src/scans/
+
+# OS/editor cruft
+.DS_Store
+*.swp

@@ -1,0 +1,20 @@
+# Core (always required)
+numpy
+pyserial>=3.5
+
+# GPIO on Raspberry Pi OS Bookworm+: the old RPi.GPIO sysfs backend was
+# removed: `rpi-lgpio` is a drop-in replacement that provides the same
+# `RPi.GPIO` import name backed by lgpio. See ARCHITECTURE.md / BUILD.md.
+rpi-lgpio>=0.6
+
+# Hardware PWM for the LiDAR motor-speed control pin (needs
+# `dtoverlay=pwm-2chan` in /boot/firmware/config.txt -- see BUILD.md).
+# platform_utils.py falls back to software PWM automatically if this
+# isn't installed or the overlay isn't enabled, so it's not a hard
+# requirement, just recommended for less jittery speed control.
+rpi-hardware-pwm>=0.2.2
+
+# --- optional extras, only needed if enabled in config.json ---
+
+# ENABLE_IMU: true (see BOM.md optional upgrades)
+# mpu6050-raspberrypi>=1.2
