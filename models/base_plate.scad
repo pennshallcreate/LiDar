@@ -30,12 +30,22 @@ foot_h = 40;                     // clears the NEMA17 body hanging underneath
 button_holes = [[150, 8], [180, 8]];  // 8mm margin from edge -- was 0 (on the edge), which cut open notches instead of round holes
 button_d = 12;
 
-// electronics mounting grid (generic -- fits Pi/driver/boost/terminal block
+// electronics mounting grid (generic -- fits driver/boost/terminal block
 // regardless of exact layout, see PRINTS.md rationale)
 grid_x0 = 135; grid_x1 = 190;
 grid_y0 = 35;  grid_y1 = 115;  // kept well clear (>=20mm) of feet/buttons/straps/edges -- see PRINTS.md clearance note
 grid_step = 20;
 grid_hole_d = 3.4;
+
+// dedicated Raspberry Pi 3 A+ mounting pattern (58 x 49 mm, the published
+// Pi/HAT standard -- the compute board is fixed now, so it gets real holes).
+// Board is 65 x 56; placed in the upper part of the electronics area,
+// leaving the strip below it (y < ~80) for the breadboard + ULN2003.
+// The Pi's holes are 2.75mm: use M2.5 standoffs or zip ties, NOT the M3 kit.
+pi3a_center = [165, 108];
+pi3a_dx = 58;
+pi3a_dy = 49;
+pi3a_hole_d = 2.8;
 
 // battery-strap slots (power bank is strapped on, not enclosed -- see PRINTS.md)
 strap_slots = [[130, 8], [130, 142]];
@@ -73,6 +83,13 @@ module uln2003_holes(center, spacing, hole_d) {
             circle(d = hole_d);
 }
 
+module pi3a_holes(center, dx, dy, hole_d) {
+    for (sx = [-dx / 2, dx / 2])
+        for (sy = [-dy / 2, dy / 2])
+            translate(center + [sx, sy])
+                circle(d = hole_d);
+}
+
 module mounting_grid(x0, x1, y0, y1, step, hole_d) {
     nx = floor((x1 - x0) / step);
     ny = floor((y1 - y0) / step);
@@ -92,6 +109,7 @@ module base_plate_2d() {
         uln2003_holes(bearing_center, uln2003_spacing, motor_hole_d);
 
         mounting_grid(grid_x0, grid_x1, grid_y0, grid_y1, grid_step, grid_hole_d);
+        pi3a_holes(pi3a_center, pi3a_dx, pi3a_dy, pi3a_hole_d);
 
         for (p = button_holes) translate(p) circle(d = button_d);
         for (p = strap_slots) translate(p) square([strap_slot_w, strap_slot_h], center = true);

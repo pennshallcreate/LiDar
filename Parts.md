@@ -1,12 +1,13 @@
 # Parts
 
 Shopping list only — for prices, sourcing notes, and design rationale see
-[BOM.md](BOM.md). All parts on Amazon. Total: **$173** (of a $175 cap).
+[BOM.md](BOM.md). All parts on Amazon. Total: **$188** — or **$158 if you
+already own the Raspberry Pi 3 A+** (see BOM.md's budget note).
 
 | Part | Price | Link |
 |---|---|---|
 | LDRobot LD19 LiDAR ("D300" kit) | $90 | [Amazon](https://www.amazon.com/DTOF-D300-Distance-Obstacle-Education/dp/B0B1V8D36H) |
-| Raspberry Pi Zero 2 WH | $15 | [Amazon](https://www.amazon.com/Raspberry-Pi-Zero-2-WH/dp/B0DB2JBD9C) |
+| Raspberry Pi 3 Model A+ (skip if you already own one) | $30 | [Amazon](https://www.amazon.com/Raspberry-Pi-3-Computer-Board/dp/B07KKBCXLY) |
 | microSD card, 32 GB, A1/A2 | $6 | [Amazon](https://www.amazon.com/SanDisk-32GB-MicroSDHC-Memory-Card/dp/B003WGJYCY) |
 | 4" square lazy-susan turntable bearing (2-pack) | $9 | [Amazon](https://www.amazon.com/Turntable-Bearings-Hardware-Rotating-Bearing/dp/B09R1S2JNB) — commodity part, [any in-stock 4" square one works](https://www.amazon.com/s?k=4+inch+square+lazy+susan+turntable+bearing) |
 | 28BYJ-48 + ULN2003 stepper kit (2-set) | $9 | [Amazon](https://www.amazon.com/KOOKYE-28BYJ-48-Stepper-ULN2003-Arduino/dp/B019TOJRC4) |
@@ -16,11 +17,12 @@ Shopping list only — for prices, sourcing notes, and design rationale see
 | Dupont jumper wire kit (M-M / M-F / F-F) | $7 | [Amazon](https://www.amazon.com/s?k=dupont+jumper+wire+kit+mm+mf+ff) |
 | M3 fastener assortment (screws, standoffs, nuts) | $6 | [Amazon](https://www.amazon.com/s?k=m3+screw+standoff+nut+assortment+kit) |
 
-## Assumed already on hand (not in the $173 total — check before ordering)
+## Assumed already on hand (not in the totals above — check before ordering)
 
 | Item | If you don't have one |
 |---|---|
-| **Micro-USB cable** (power bank → Pi; the Pi Zero 2 W's power port is micro-USB, *not* USB-C) | ~$5–6, [Amazon](https://www.amazon.com/s?k=usb+a+to+micro+usb+cable) |
+| **Micro-USB cable** (power bank → Pi; the Pi 3 A+'s power port is micro-USB, *not* USB-C — use a short, thick charge-rated one) | ~$5–6, [Amazon](https://www.amazon.com/s?k=usb+a+to+micro+usb+cable) |
+| **M2.5 standoffs or small zip ties** (Pi → base plate; the Pi's 2.75 mm mounting holes are too small for the M3 kit) | ~$7, [Amazon](https://www.amazon.com/s?k=m2.5+standoff+kit), or zip-tie it |
 | SD-card slot or USB reader on your computer (one-time OS flash; the SanDisk card usually includes a full-size SD adapter) | ~$7, [Amazon](https://www.amazon.com/s?k=usb+sd+card+reader) |
 | Zip ties + a hook-and-loop strap or bungee (wire routing, battery mounting) | a few $, any store |
 | Phillips screwdriver + small hex/Allen key | — |
@@ -32,7 +34,7 @@ exception to verify on arrival: the LiDAR's cable end (see BOM.md's LiDAR
 row — a ~$7 JST-to-Dupont adapter is the fallback if it isn't
 Dupont-style).
 
-## Optional add-ons (not in the $173 total)
+## Optional add-ons (not in the $188 total)
 
 | Part | Price | Link |
 |---|---|---|

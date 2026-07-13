@@ -1,7 +1,7 @@
 """
 Point-cloud assembly and PLY export -- pure NumPy, no Open3D dependency
 (see ARCHITECTURE.md section 2 for why that's a deliberate choice for a
-512 MB Pi Zero 2 W).
+512 MB Pi 3 Model A+).
 
 The 2D->3D merge transform pipeline (translate by the sensor's offset from
 the rotation axis, rotate by a fixed mechanical mounting-angle correction,
