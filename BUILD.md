@@ -87,6 +87,11 @@ exactly. Everything below is a female Dupont wire pushed onto a Pi header
 pin at one end and either a breadboard row or a component's own pin/socket
 at the other — nothing here is soldered or crimped.
 
+- [ ] Mount the Pi 3 A+ to the base plate's dedicated 58×49mm hole
+      pattern (PRINTS.md § 1) — M2.5 standoffs if you have them, small
+      zip ties through the same holes if you don't (the M3 kit's screws
+      are too big for the Pi's 2.75mm mounting holes). Orient it with the
+      40-pin header facing the breadboard area.
 - [ ] Seat the breadboard(s) in the base plate's open electronics area
       (adhesive backing or a strip of hook-and-loop tape — see PRINTS.md)
 - [ ] Wire the LiDAR's cable: check the connector end first (see BOM.md's
@@ -124,13 +129,19 @@ at the other — nothing here is soldered or crimped.
 - [ ] Boot the Pi, SSH in, then `sudo raspi-config` or edit
       `/boot/firmware/config.txt` directly to add:
       ```
+      enable_uart=1
       dtoverlay=gpio-shutdown
       dtoverlay=pwm-2chan
       ```
-      (the first makes GPIO3 a wake/shutdown button per BOM.md's power
-      button; the second enables hardware PWM on GPIO18/19 for the LiDAR
-      motor-speed control — `src/platform_utils.py` falls back to software
-      PWM automatically if you skip this, just with more jitter)
+      (`enable_uart=1` turns on the mini-UART on GPIO14/15 — it's
+      **disabled by default on Bluetooth-equipped Pis like the 3 A+**,
+      and this setting also pins the core clock so the UART baud rate
+      stays stable; without it `/dev/ttyS0` won't exist. The
+      `gpio-shutdown` overlay makes GPIO3 a wake/shutdown button per
+      BOM.md's power button; `pwm-2chan` enables hardware PWM on
+      GPIO18/19 for the LiDAR motor-speed control —
+      `src/platform_utils.py` falls back to software PWM automatically if
+      you skip this, just with more jitter)
 - [ ] If using the optional IMU, also add:
       ```
       dtparam=i2c_arm=off
@@ -197,8 +208,10 @@ the right thing" checks.
       SSH in
 - [ ] Plug in the LiDAR only. Run `python3 src/lidar_driver.py` — you
       should see it print a rotation speed reading within a couple
-      seconds. If nothing happens: check the UART wiring isn't
-      crossed, check `ls -l /dev/ttyS0` shows `dialout` group access, check
+      seconds. If `/dev/ttyS0` doesn't exist at all: `enable_uart=1` is
+      missing from `/boot/firmware/config.txt` (Phase 4). If it exists
+      but nothing happens: check the UART wiring isn't crossed, check
+      `ls -l /dev/ttyS0` shows `dialout` group access, check
       `dtoverlay=pwm-2chan` is actually in `/boot/firmware/config.txt`
 - [ ] Plug in the motor/ULN2003 only. Run `python3 src/stepper_driver.py`
       — the turntable should visibly rotate a few degrees and back. If it
@@ -263,7 +276,9 @@ the right thing" checks.
 | Symptom | Likely cause |
 |---|---|
 | `RuntimeError: Failed to add edge detection` on button daemon start | Old `RPi.GPIO` sysfs backend still installed — see Phase 4's `apt remove python3-rpi.gpio` step |
+| `/dev/ttyS0` doesn't exist | `enable_uart=1` missing from `/boot/firmware/config.txt` — the 3 A+'s mini-UART is off by default (Phase 4) |
 | LiDAR never syncs / constant CRC warnings | Wrong baud rate in `config.json` for your device, or a bad/loose UART connection |
+| Random under-voltage warnings / lightning-bolt icon | Long or thin micro-USB power cable — use a short charge-rated cable and the power bank's highest-current port (the 3 A+ wants a 2.5 A-capable supply) |
 | Motor vibrates/judders but doesn't turn | Two of the IN1-IN4 wires are swapped — check the order against ARCHITECTURE.md's pinout table |
 | Motor turns but skips steps under load | 28BYJ-48 is near its torque limit — check nothing is binding in the bearing/hub coupling before assuming the motor is faulty |
 | Scan runs but PLY is empty | Check `lidar.z_angles` isn't empty in a manual `scan.py` run — usually means the stepper callback never fired, i.e. `max_packages` was reached before one full `out_len` revolution completed (a resolution/config mismatch) |

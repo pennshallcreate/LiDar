@@ -27,7 +27,7 @@ sphere.
                          └───────┬───────┘
                                  │
         ┌────────────────────────────────────────────┐
-        │  base: Pi Zero 2 W, breadboard + ULN2003    │
+        │  base: Pi 3 A+, breadboard + ULN2003        │
         │  driver, buttons -- single 5V rail, no      │
         │  boost converter needed (§4.1)              │
         └────────────────────────────────────────────┘
@@ -51,17 +51,24 @@ steps — see [§4](#4-motion-system) — and is comfortably finer than 0.8°, s
 elevation, not azimuth, is the resolution bottleneck, same as the reference
 project.
 
-## 2. Compute: Raspberry Pi Zero 2 W
+## 2. Compute: Raspberry Pi 3 Model A+
 
 A Pi 4 (PiLiDAR's choice) is massive overkill for a LiDAR-only build with no
 camera/panorama/meshing pipeline running on-device — that pipeline is the
 part PiLiDAR uses the extra RAM/CPU for, and it's exactly the part we've cut.
 What's left (read UART, toggle GPIO, buffer numpy arrays, write a PLY file)
-comfortably fits the Zero 2 W's quad-core Cortex-A53 and 512 MB RAM, at
-roughly a third of the Pi 4's price and power draw. The 40-pin header,
+comfortably fits the 3 A+'s quad-core Cortex-A53 @ 1.4 GHz and 512 MB RAM,
+at well under half the Pi 4's price and power draw. The 40-pin header,
 hardware PWM, and mini-UART are all identical to the Pi 4 for our purposes,
 so PiLiDAR's GPIO-level driver code ports over almost unchanged (see
-`src/`).
+`src/`). Two 3 A+ perks this build actively uses: the header ships
+**pre-soldered as standard** (load-bearing for the no-soldering constraint —
+see BOM.md), and its dual-band 802.11ac Wi-Fi makes headless scan pull-off
+faster and more reliable than a 2.4 GHz-only board in a congested
+apartment-Wi-Fi environment. The full-size USB-A and HDMI ports go unused
+during scanning, but they make bench debugging (keyboard, monitor, USB
+serial adapter) possible without any adapters — something a Pi Zero-class
+board can't offer.
 
 **Deliberate simplification vs. PiLiDAR:** the onboard code never imports
 Open3D. Point-cloud assembly is plain NumPy (coordinate transforms over a
@@ -78,14 +85,15 @@ PC").
 ## 3. GPIO pinout
 
 All pin numbers are **BCM numbering**, all connections are push-fit Dupont
-jumpers into the Pi Zero 2 **WH**'s pre-soldered header (no soldering
-anywhere — see BOM.md) routed through a breadboard. This map is carried
+jumpers into the Pi 3 A+'s pre-soldered 40-pin header (soldered at the
+factory on every 3 A+ — no soldering anywhere, see BOM.md) routed through a
+breadboard. This map is carried
 over from PiLiDAR unchanged where the subsystem is unchanged (LiDAR
 UART/PWM, buttons) — no reason to diverge from a proven pin assignment.
 
 | Signal | Pi GPIO (BCM) | Physical pin | Notes |
 |---|---|---|---|
-| LiDAR UART RX | GPIO15 (RXD0) | 10 | mini-UART (`/dev/ttyS0`); LiDAR only transmits, so TX (GPIO14) is unused |
+| LiDAR UART RX | GPIO15 (RXD0) | 10 | mini-UART (`/dev/ttyS0`); LiDAR only transmits, so TX (GPIO14) is unused. On the 3 A+ (a Bluetooth-equipped Pi) the mini-UART is disabled by default — `enable_uart=1` in `config.txt` turns it on and pins the core clock so the baud rate stays stable (BUILD.md Phase 4) |
 | LiDAR motor speed (PWM) | GPIO18 (PWM0) | 12 | hardware PWM, `rpi-hardware-pwm` |
 | Scan-trigger button | GPIO17 | 11 | to GND, internal pull-up, falling-edge |
 | Power button | GPIO3 | 5 | hardwired wake pin; `dtoverlay=gpio-shutdown` |
@@ -129,7 +137,7 @@ No boost converter anywhere.
 - **The motor's cable plugs directly into the ULN2003 board's onboard
   socket** — no crimping, no soldering, it's sold as a matched pair.
 - **Torque/speed margin is real but smaller than a NEMA17's** (roughly
-  1/10th the holding torque) — see [BOM.md](BOM.md#optional-upgrades-not-included-in-the-157-total)
+  1/10th the holding torque) — see [BOM.md](BOM.md#optional-upgrades-not-included-in-the-188-total)
   for when that matters and the NEMA17 upgrade path below.
 
 ### 4.2 Optional upgrade: NEMA17 + A4988 (needs a multimeter)
@@ -192,19 +200,24 @@ expectation:
 
 | Load | Draw |
 |---|---|
-| Pi Zero 2 W (CPU+Wi-Fi, published worst case) | 0.50 A @ 5V = 2.50 W |
+| Pi 3 A+ (CPU+Wi-Fi, pessimistic ceiling — measured stress figures run 0.7–0.85 A, this rounds up) | 1.00 A @ 5V = 5.00 W |
 | LD19 LiDAR (datasheet current, upper end) | 0.45 A @ 5V = 2.25 W |
 | 28BYJ-48/ULN2003 (datasheet worst-case combined coil current) | 0.40 A @ 5V = 2.00 W |
-| **Total draw** | **6.75 W** (≈1.35 A @ 5V) |
+| **Total draw** | **9.25 W** (≈1.85 A @ 5V) |
+
+That 1.85 A worst-case total also clears the power bank's output rating
+with room to spare (typical 10,000 mAh banks deliver 2.4–3 A per port) —
+use the bank's highest-rated output port, since the 3 A+'s official
+recommended supply is 2.5 A.
 
 | | |
 |---|---|
 | Nominal energy (10 Ah × 3.7 V) | 37.0 Wh |
 | × 80% (aged-battery/cold derating) | 29.6 Wh |
 | × 80% (USB boost conversion, low end — this is the power bank's own internal 3.7V-cell-to-5V-output conversion, not an external boost converter) | **23.68 Wh usable** |
-| ÷ worst-case draw | 23.68 / 6.75 W |
-| **Runtime floor** | **210.5 min (3h 31m)** |
-| **Margin over the 15-min requirement** | **14.0×** |
+| ÷ worst-case draw | 23.68 / 9.25 W |
+| **Runtime floor** | **153 min (2h 33m)** |
+| **Margin over the 15-min requirement** | **10.2×** |
 
 ### Typical case (practical expectation)
 
@@ -212,25 +225,28 @@ Real (lighter) stepper draw, fresh battery, mixed CPU/Wi-Fi load:
 
 | | |
 |---|---|
-| Total typical draw | ≈4.75 W |
+| Total typical draw | ≈6.0 W |
 | Usable energy (100% capacity × 88% conversion) | 32.6 Wh |
-| **Typical runtime** | **≈6h 51m** |
+| **Typical runtime** | **≈5h 26m** |
 
 In practice, expect a full day of scanning (dozens of individual scans at
 ~1.5–2 min each, see §6) per charge, not a single 15-minute window — the
-14× worst-case margin is that generous mostly because dropping the boost
+10× worst-case margin is that generous mostly because dropping the boost
 converter (§4.1) removed both a conversion-efficiency loss and a
-several-watt load at the same time.
+several-watt load at the same time. (The move from a Pi Zero 2 W to the
+3 A+ in this revision cost roughly an hour of worst-case floor — 210 min
+down to 153 min — a fair trade for the faster CPU clock, dual-band Wi-Fi,
+and factory-soldered header, and still 10× more runtime than required.)
 
 ### If you add the optional NEMA17 + A4988 upgrade (§4.2)
 
 That path reintroduces a boost converter and a heavier motor load — budget
 roughly 12-15W for the stepper+driver+boost stage (current-limited to
 0.5A/phase, ~80% boost efficiency) instead of the 2W above. Total draw
-becomes ≈17-20W worst case, which against the same 23.68Wh usable energy
-still clears the 15-minute requirement (≈70-85 min floor, 4.7-5.7× margin)
-— just with noticeably less margin than the default build, and only worth
-doing once you have the multimeter that path requires anyway.
+becomes ≈19.5-22.5W worst case, which against the same 23.68Wh usable
+energy still clears the 15-minute requirement (≈63-73 min floor, 4.2-4.9×
+margin) — just with noticeably less margin than the default build, and
+only worth doing once you have the multimeter that path requires anyway.
 
 ## 6. Scan duration (informational, not a hard requirement)
 

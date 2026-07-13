@@ -3,16 +3,17 @@
 A buildable, portable, USB-C-rechargeable 360° 3D scanner modeled on the
 open-source [PiLiDAR](https://github.com/PiLiDAR/PiLiDAR) project: an
 LDRobot 2D LiDAR spun on a stepper-driven turntable, orchestrated by a
-Raspberry Pi, exporting colored PLY point clouds. No camera, no panorama
+Raspberry Pi 3 Model A+, exporting colored PLY point clouds. No camera, no panorama
 stitching — just the scanning core, built to a real budget.
 
 | | |
 |---|---|
-| **Cost** | $173 of a $175 cap — see why ≤$100 isn't realistic in [BOM.md](BOM.md) |
+| **Cost** | $188 all-new, or $158 if you already own the Pi 3 A+ — see the budget note in [BOM.md](BOM.md) |
+| **Compute** | Raspberry Pi 3 Model A+ (factory-soldered 40-pin header, dual-band Wi-Fi) |
 | **Sourcing** | 100% Amazon, Prime-eligible — see [Parts.md](Parts.md) for the plain shopping list |
 | **Build skill** | No soldering, no multimeter — breadboard + push-fit connectors throughout |
 | **Sensor** | LDRobot LD19 (or LD06), 4500 samples/s, 0.02–12m range |
-| **Runtime** | ≥3.5h worst-case, ~6-7h typical, on a single USB-C power bank charge — [proof](ARCHITECTURE.md#5-power-budget) |
+| **Runtime** | ≥2.5h worst-case, ~5.5h typical, on a single USB-C power bank charge — [proof](ARCHITECTURE.md#5-power-budget) |
 | **Output** | Binary PLY point clouds, intensity-colored |
 | **License** | [CC BY-NC-SA 4.0](LICENSE.md) (inherited from PiLiDAR) |
 

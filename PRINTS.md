@@ -36,13 +36,16 @@ build's parts:
 - **The battery is strapped on, not enclosed.** A flat strap area (two
   slots, any hook-and-loop strap or bungee) fits whatever power bank you
   have or swap in later, rather than locking in one exact size.
-- **A generic M3 mounting grid** for the breadboard/Pi/driver board,
-  rather than component-specific bosses. Their exact footprints depend on
-  which exact boards you bought; a 20mm grid of clearance holes lets you
-  zip-tie or M3-standoff whatever you actually have, instead of hoping
-  your parts match a hole pattern sized for parts I don't have in hand.
-  This is also where the breadboard(s) sit (adhesive-backed, no bolt
-  pattern needed — see part 1 below).
+- **A dedicated Raspberry Pi 3 A+ hole pattern plus a generic M3 grid.**
+  The compute board is now fixed as a Pi 3 A+, and its 58×49mm mounting
+  pattern is a published standard (shared with every HAT), so the base
+  plate carries real holes for it — ⌀2.8mm, for M2.5 standoffs or zip
+  ties, since the Pi's own holes are 2.75mm and won't pass the M3 kit's
+  screws. Everything else (driver board, buttons) keeps the generic 20mm
+  grid of M3 clearance holes: those boards' footprints vary by exactly
+  which listing you bought, so zip-tie or M3-standoff whatever you
+  actually have. The breadboard(s) sit in the same area (adhesive-backed,
+  no bolt pattern needed — see part 1 below).
 
 ## Parts
 
@@ -64,6 +67,7 @@ battery straps, tripod mount.
 | Feet | 4× ⌀14×40mm posts, corners | 40mm clears the NEMA17 body hanging underneath (see ARCHITECTURE.md) |
 | Tripod mount | ⌀20mm boss, ⌀9.6mm pilot hole, underside | sized for a standard 1/4"-20 heat-set insert — **verify against the insert you buy**, they vary a mm or so by brand |
 | Electronics grid | 3×5 array of ⌀3.4mm holes, 20mm pitch | generic mount — zip-tie or M3 standoff whatever you have. A half-size solderless breadboard (~85×55mm, BOM.md) sits here via its adhesive backing; it doesn't need to align with the grid holes, which stay free for the ULN2003 board, buttons, etc. A full-size breadboard (~165mm long) does *not* fit this zone next to the bearing — that's why BOM.md specifies half-size. |
+| Pi 3 A+ mounting | 4× ⌀2.8mm on a 58×49mm rectangle, centered at (165, 108) | the standard Pi/HAT pattern, placed in the upper half of the electronics area so the strip below stays free for the breadboard + ULN2003. **Use M2.5 standoffs or small zip ties** — the Pi's own mounting holes are 2.75mm, too small for the M3 kit. The 65×56mm board overhangs the pattern by ~3.5mm per side; its left edge sits ~7mm into the battery-strap line (x≈120–140), so orient the Pi with its microSD slot facing away from the strap and route the strap over the plate, not over the board. |
 | Button holes | 2× ⌀12mm | Sized for a panel-mount switch pushed through from below. This build instead uses pin-header button *modules* (BOM.md) which just sit in the open electronics area and don't need to pass through a hole — these two holes go unused by default, or repurpose them as wire/zip-tie pass-throughs. If you'd rather use bare panel-mount switches, they fit here as originally designed. |
 | Battery strap slots | 2× 20×3mm slots | route a hook-and-loop strap or bungee through these to hold the power bank |
 
